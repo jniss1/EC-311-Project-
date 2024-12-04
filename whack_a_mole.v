@@ -36,15 +36,15 @@ reg GAMEPLAY = 3'b001;
 reg END_SCREEN = 3'b010;
 
 // Timer definitions
-reg [7:0] mole_timer;        // Random timer for mole to appear (1-3 seconds) [DOULE CHECK if that many clk cycles corresponds to the second timings]
-reg [7:0] hammer_timer;      // Time for hammer availability
+reg [28:0] mole_timer;        // Random timer for mole to appear (1-3 seconds) [DOULE CHECK if that many clk cycles corresponds to the second timings]
+reg [28:0] hammer_timer;      // Time for hammer availability
 reg button_prev;             // Previous button state to detect rising edge
 reg [7:0] blink_counter;     // Counter for blinking in the end state
 reg [7:0] random_num;        // Random number for mole_timer
 
 // Note: I don't think the random number generator detailed below is working rn; As a task, turn it into extern module as input
 
-
+/*
 // Reset Logic for timers, button, and RNG
 always @(posedge clk or posedge reset) begin
     if (reset) begin
@@ -59,6 +59,17 @@ always @(posedge clk or posedge reset) begin
         random_num <= random_num + 1;   // change random number
     end
 end
+*/
+
+//Button Tracking
+always @(posedge clk or posedge reset) begin
+    if (reset) begin
+        button_prev <= 0;  // Initialize button_prev on reset
+    end else begin
+        button_prev <= button;  // Update button_prev on every clock cycle
+    end
+end
+
 
 
 // Game logic state machine
@@ -79,12 +90,12 @@ always @(posedge clk or posedge reset) begin
                 mole <= 0;                          // turn mole LED off
                 mole_timer <= 0;                    // Reset mole timer to 0 in IDLE state
                 if (button && !button_prev) begin   // Detect rising edge of the button, on press goto GAMPLAY on next clk cycle
-                    state <= GAMEPLAY;
                     // Initilizing gameplay variables
                     score <= 4'b0000;
                     lives <= 4'b0011;
-                    mole_timer <= 300_000_000;
+                    mole_timer <= 100_000_000;
                     hammer_timer <=  300_000_000;                 // 1 second for hammer timer
+                    state <= GAMEPLAY;
                 end
             end
             
@@ -114,7 +125,7 @@ always @(posedge clk or posedge reset) begin
                         // If yes, get a point & reset mole & timer variables to restart the GAMEPLAY logic loop
                         score <= score + 1;      // Increment score on button press
                         mole <= 0;               // Turn mole off
-                        mole_timer <= 300_000_000;  // Reset mole timer to another randome variable (AGAIN, Change to work with external module)
+                        mole_timer <= 200_000_000;  // Reset mole timer to another randome variable (AGAIN, Change to work with external module)
                         hammer_timer <=  300_000_000;  // Reset hammer timer
                     end 
                 end 
@@ -133,20 +144,20 @@ always @(posedge clk or posedge reset) begin
                     
                     // If that did not trigger, then there are still lives remaining. Reset the timers to begin gameplay loop all over again
                     else begin
-                        mole_timer <=  300_000_000;  // Again, signal to MODIFY THIS in accordance to new RNG module
+                        mole_timer <=  200_000_000;  // Again, signal to MODIFY THIS in accordance to new RNG module
                         hammer_timer <=  300_000_000;                 
                     end
                 end
             end
             
-            3'b010: begin
+            END_SCREEN: begin
                 // Mole LED will blink every second until button is pressed
                 /*blink_counter <= blink_counter + 1;
                 if (blink_counter == 8'd25000000) begin  // Toggle mole every second (assuming 100 MHz clock)
                     mole <= ~mole;                       // Toggle mole visibility
                     blink_counter <= 0;                  // reset counter for next time
                 end*/
-                
+                score <= 4'b0000;
                 // Waits in this state until a rising edge button press is detected, then sends to IDLE state.
                 if (button && !button_prev) begin  
                     //state <= 3'b000;  // Reset to IDLE state next clk cycle
@@ -157,7 +168,7 @@ always @(posedge clk or posedge reset) begin
                     mole_timer <= 0;
                     hammer_timer <= 0;
                     blink_counter <= 0;
-                    state <= 3'b000;  // Reset to IDLE state next clk cycle
+                    state <= IDLE;  // Reset to IDLE state next clk cycle
                 end
             end
         endcase
