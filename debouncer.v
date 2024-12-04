@@ -41,7 +41,8 @@
 // 
 //////////////////////////////////////////////////////////////////////////////////
 
-// Implament the given flow:
+// Just for clarification, this is the module I wrote for Lab 3 which was tested and approved there (hence not tb file required)
+// Implament the given control flow diagram:
 
 module debouncer(
     input clk,
