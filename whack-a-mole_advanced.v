@@ -20,7 +20,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 
-module whack_a_mole_advanced(
+module whack_a_mole(
     input clk,
     input reset,
     input button,              // Debounced button input (fed from exernal module)
@@ -36,8 +36,9 @@ module whack_a_mole_advanced(
     output reg mole3,
     output reg mole4,
     output reg [3:0] score,    // Player score
-    output reg [3:0] lives,    // Player lives
+    output reg [3:0] lives,    // Player lives (3 max) -- binary
     output reg [2:0] state     // Game state (IDLE, GAMEPLAY, END_SCREEN)
+    //output reg [7:0] highscore // set to 0 on reset (thus need to fix ENDSCREEN bug); initilized to 0, updates when it is broken. Displays your score against it in END_SCREEN
 );
 
 // Defining States 
@@ -59,6 +60,7 @@ reg button_prev4;
 reg [7:0] blink_counter;     // Counter for blinking in the end state
 reg [7:0] random_num;        // Random number for mole_timer
 reg [28:0] reduced_speed; // NEEDS MODIFICATION, shoudl correspond to integer that is 0.083 seconds
+
 
 // Note: I don't think the random number generator detailed below is working rn; As a task, turn it into extern module as input
 
@@ -121,6 +123,7 @@ always @(posedge clk or posedge reset) begin
         button_prev2 <= 0;
         button_prev3 <= 0;
         button_prev4 <= 0;
+        //highscore <= 0;
     end else begin
         case(state)
             IDLE: begin
@@ -139,8 +142,8 @@ always @(posedge clk or posedge reset) begin
                     // Initilizing gameplay variables
                     score <= 4'b0000;
                     lives <= 4'b0011;
-                    mole_timer <= 100_000_000;
-                    mole_timer2 <= 100_000_001;        // Note that RNG should have contraint of outputting 4 DIFFERENT rand. nums to avoid issue of 2 timers running out at the same time
+                    mole_timer <= 100_000_001;
+                    mole_timer2 <= 100_000_000;        // Note that RNG should have contraint of outputting 4 DIFFERENT rand. nums to avoid issue of 2 timers running out at the same time
                     mole_timer3 <= 100_000_002;
                     mole_timer4 <= 100_000_003;
                     hammer_timer <=  300_000_000;                 // 1 second for hammer timer
@@ -174,7 +177,7 @@ always @(posedge clk or posedge reset) begin
                     // We do the same check for the rest of the timers:
                     // We use else if's since we only want this triggering for the first, then to skip this code until next gameplay cycle
                     // MOLE 2
-                    /*else if (mole_timer2 == 0) begin
+                    else if (mole_timer2 == 0) begin
                         mole2 <= 1;          // If 0, turn on the mole 
                         mole_timer <= 0;   // reset other timers
                         mole_timer3 <= 0;
@@ -194,12 +197,11 @@ always @(posedge clk or posedge reset) begin
                         mole_timer3 <= 0;
                         mole_timer <= 0;
                     end
-                    */
+                    
                 end
                 
                 // Hammer timer logic starts only when one of the mole turns on (ie mole timer == 0 and prev case does not trigger):
-                //else if (hammer_timer > 0 && (mole == 1 || mole2==1 || mole3 == 1 || mole4 == 1)) begin
-                else if (mole == 1) begin
+                else if (hammer_timer > 0 && (mole == 1 || mole2==1 || mole3 == 1 || mole4 == 1)) begin
                     // decreases hammer timer every clk cycle until 0:
                     hammer_timer <= hammer_timer - 1; 
                     /*
@@ -229,7 +231,7 @@ always @(posedge clk or posedge reset) begin
                         
                         hammer_timer <= 300_000_000;
                         // DYNAMIC TIMER INCREASE
-                        if (score > 10) begin
+                        if (score > 5) begin
                                 hammer_timer <= hammer_timer - reduced_speed;
                                 if (score > 20) begin
                                         hammer_timer <= hammer_timer - reduced_speed;
@@ -258,8 +260,8 @@ always @(posedge clk or posedge reset) begin
                         end
                    end
                    //Case 2: Wrong button  
-                   else begin
-                            score <= score + 1;
+                   else if ((mole == 1 && (button2 || button3 || button4)) || (mole2 == 1 && (button || button3 || button4)) || (mole3 == 1 && (button || button2 || button4)) || (mole4 == 1 && (button || button2 || button3))) begin
+                            //score <= score + 1;
                             lives <= lives - 1;  
                             mole <= 0;
                             mole2 <= 0;
@@ -282,7 +284,7 @@ always @(posedge clk or posedge reset) begin
                 
                 // We reach here when varaible have yet to reset and missed chance to hit button while timer was on (both timers are now 0)
                 // Here, we handle the lose a life case:
-                else if (hammer_timer == 0) begin
+                if (hammer_timer == 0) begin
                     // Update lives and reset mole to zero
                     lives <= lives - 1;  
                     mole <= 0;
@@ -313,12 +315,15 @@ always @(posedge clk or posedge reset) begin
                     mole <= ~mole;                       // Toggle mole visibility
                     blink_counter <= 0;                  // reset counter for next time
                 end*/
+                //if (score > highscore) begin
+                    //highscore <= score
+                //end
                 score <= 4'b0000;
                 // Waits in this state until a rising edge button press is detected, then sends to IDLE state.
                 if (button && !button_prev) begin  
                     //state <= 3'b000;  // Reset to IDLE state next clk cycle
                     // Some of the assignemnts are redudent since they happen again in the idle state, just saying. However, if you later want to trim it down, trim the ones in the IDLE state instead
-                    score <= 4'b0000;
+                    score <= 4'b000000;
                     lives <= 4'b0011; // Starting with 3 lives
                     mole <= 0;
                     mole_timer <= 0;
