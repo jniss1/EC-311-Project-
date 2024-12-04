@@ -20,7 +20,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 
-module whack_a_mole(
+module whack_a_mole_advanced(
     input clk,
     input reset,
     input button,              // Debounced button input (fed from exernal module)
