@@ -27,7 +27,7 @@ module whack_a_mole_advanced(
     input button2,
     input button3,
     input button4,
-    //input randnum            // NOTE: Need to add apropriate reg size. SHould interface with RNG module which should ensure each is different
+    //input randnum            // NOTE: Need to add apropriate reg size. Should interface with RNG module which should ensure each is different
     //input randnum2
     //input randum3
     //input randnum4
@@ -38,13 +38,14 @@ module whack_a_mole_advanced(
     output reg [6:0] score,    // Player score
     output reg [1:0] lives,    // Player lives (3 max) -- binary
     output reg [2:0] state     // Game state (IDLE, GAMEPLAY, END_SCREEN)
-    //output reg [7:0] highscore // set to 0 on reset (thus need to fix ENDSCREEN bug); initilized to 0, updates when it is broken. Displays your score against it in END_SCREEN
+    
 );
 
 // Defining States 
 reg IDLE = 3'b000;
 reg GAMEPLAY = 3'b001;
-reg END_SCREEN = 3'b010;
+reg WIN_SCREEN = 3'b100;
+//reg END_SCREEN = 3'b111;
 
 // Timer definitions
 reg [28:0] mole_timer;        // Random timer for mole to appear (1-3 seconds) [DOULE CHECK if that many clk cycles corresponds to the second timings]
@@ -69,8 +70,8 @@ reg [28:0] blink_counter2;
 reg [28:0] blink_counter3;
 reg [28:0] blink_counter4;
 
-reg [28:0] reduced_speed;   // NEEDS MODIFICATION, shoudl correspond to integer that is 0.083 seconds
-reg [7:0] high_score;
+reg [28:0] reduced_speed;   
+reg [7:0] high_score;       
 
 
 //Button Tracking
@@ -191,6 +192,10 @@ always @(negedge clk or posedge reset) begin
                         //state <= IDLE;
                         state <= 3'b111; // It seems that this is the only transition condition that triggers
                 end 
+                // Then, we will check if the game is won:
+                if (score == 64) begin
+                        state <= 3'b100;
+                end
                 
                 // Next, we decrement the new mole timer, and check if it has hit 0:
                 
@@ -239,16 +244,6 @@ always @(negedge clk or posedge reset) begin
                 else if (hammer_timer > 0 && (mole == 1 || mole2==1 || mole3 == 1 || mole4 == 1)) begin
                     // decreases hammer timer every clk cycle until 0:
                     hammer_timer <= hammer_timer - 1; 
-                    /*
-                    // Check if user has pressed button while hammer timer is on only for rising edge (since holding does not count as a hit):
-                    if (button && !button_prev) begin  
-                        // If yes, get a point & reset mole & timer variables to restart the GAMEPLAY logic loop
-                        score <= score + 1;      // Increment score on button press
-                        mole <= 0;               // Turn mole off
-                        mole_timer <= 200_000_000;  // Reset mole timer to another randome variable (AGAIN, Change to work with external module)
-                        hammer_timer <=  300_000_000;  // Reset hammer timer
-                    end */
-                    
                     
                    // Multi-mole version: 2 cases, either correct button correct mole or not
                    // Case 1: correct button
@@ -267,7 +262,34 @@ always @(negedge clk or posedge reset) begin
                         
                         // DYNAMIC TIMER INCREASE
                  
-                        if ((score >= 10) && (score < 20)) begin
+                        if ((score >= 8) && (score < 16)) begin
+                                hammer_timer <= hammer_timer - reduced_speed;
+                        end else if ((score >= 16) && (score < 24)) begin 
+                                hammer_timer <= hammer_timer - reduced_speed;
+                                hammer_timer <= hammer_timer - reduced_speed;
+                        end else if ((score >= 24) && (score < 32)) begin
+                                hammer_timer <= hammer_timer - reduced_speed;
+                                hammer_timer <= hammer_timer - reduced_speed;
+                                hammer_timer <= hammer_timer - reduced_speed;
+                        end else if ((score >= 32) && (score < 40)) begin
+                                hammer_timer <= hammer_timer - reduced_speed;
+                                hammer_timer <= hammer_timer - reduced_speed;
+                                hammer_timer <= hammer_timer - reduced_speed;
+                                hammer_timer <= hammer_timer - reduced_speed;
+                        end else if ((score >= 40) && (score < 48)) begin
+                                hammer_timer <= hammer_timer - reduced_speed;
+                                hammer_timer <= hammer_timer - reduced_speed;
+                                hammer_timer <= hammer_timer - reduced_speed;
+                                hammer_timer <= hammer_timer - reduced_speed;
+                                hammer_timer <= hammer_timer - reduced_speed;
+                       end else if ((score >= 48) && (score < 56)) begin
+                                hammer_timer <= hammer_timer - reduced_speed;
+                                hammer_timer <= hammer_timer - reduced_speed;
+                                hammer_timer <= hammer_timer - reduced_speed;
+                                hammer_timer <= hammer_timer - reduced_speed;
+                                hammer_timer <= hammer_timer - reduced_speed;
+                                hammer_timer <= hammer_timer - reduced_speed;
+                       end else if ((score >= 56) && (score < 58)) begin
                                 hammer_timer <= hammer_timer - reduced_speed;
                                 hammer_timer <= hammer_timer - reduced_speed;
                                 hammer_timer <= hammer_timer - reduced_speed;
@@ -275,44 +297,7 @@ always @(negedge clk or posedge reset) begin
                                 hammer_timer <= hammer_timer - reduced_speed;
                                 hammer_timer <= hammer_timer - reduced_speed;
                                 hammer_timer <= hammer_timer - reduced_speed;
-                                hammer_timer <= hammer_timer - reduced_speed;
-                                hammer_timer <= hammer_timer - reduced_speed;
-                                hammer_timer <= hammer_timer - reduced_speed;
-                                hammer_timer <= hammer_timer - reduced_speed;
-                        end else if ((score >= 20) && (score < 30)) begin 
-                                hammer_timer <= hammer_timer - reduced_speed;
-                                hammer_timer <= hammer_timer - reduced_speed;
-                        end else if ((score >= 30) && (score < 40)) begin
-                                hammer_timer <= hammer_timer - reduced_speed;
-                                hammer_timer <= hammer_timer - reduced_speed;
-                                hammer_timer <= hammer_timer - reduced_speed;
-                        end else if ((score >= 40) && (score < 50)) begin
-                                hammer_timer <= hammer_timer - reduced_speed;
-                                hammer_timer <= hammer_timer - reduced_speed;
-                                hammer_timer <= hammer_timer - reduced_speed;
-                                hammer_timer <= hammer_timer - reduced_speed;
-                        end else if ((score >= 50) && (score < 60)) begin
-                                hammer_timer <= hammer_timer - reduced_speed;
-                                hammer_timer <= hammer_timer - reduced_speed;
-                                hammer_timer <= hammer_timer - reduced_speed;
-                                hammer_timer <= hammer_timer - reduced_speed;
-                                hammer_timer <= hammer_timer - reduced_speed;
-                       end else if ((score >= 60) && (score < 70)) begin
-                                hammer_timer <= hammer_timer - reduced_speed;
-                                hammer_timer <= hammer_timer - reduced_speed;
-                                hammer_timer <= hammer_timer - reduced_speed;
-                                hammer_timer <= hammer_timer - reduced_speed;
-                                hammer_timer <= hammer_timer - reduced_speed;
-                                hammer_timer <= hammer_timer - reduced_speed;
-                       end else if ((score >= 70) && (score < 80)) begin
-                                hammer_timer <= hammer_timer - reduced_speed;
-                                hammer_timer <= hammer_timer - reduced_speed;
-                                hammer_timer <= hammer_timer - reduced_speed;
-                                hammer_timer <= hammer_timer - reduced_speed;
-                                hammer_timer <= hammer_timer - reduced_speed;
-                                hammer_timer <= hammer_timer - reduced_speed;
-                                hammer_timer <= hammer_timer - reduced_speed;
-                       end else if ((score >= 80) && (score < 90)) begin
+                       end else if ((score >= 58) && (score < 60)) begin
                                 hammer_timer <= hammer_timer - reduced_speed;
                                 hammer_timer <= hammer_timer - reduced_speed;
                                 hammer_timer <= hammer_timer - reduced_speed;
@@ -321,7 +306,7 @@ always @(negedge clk or posedge reset) begin
                                 hammer_timer <= hammer_timer - reduced_speed;
                                 hammer_timer <= hammer_timer - reduced_speed;         
                                 hammer_timer <= hammer_timer - reduced_speed;
-                       end else if ((score >= 80) && (score < 90)) begin
+                       end else if (score >= 60) begin
                                 hammer_timer <= hammer_timer - reduced_speed;
                                 hammer_timer <= hammer_timer - reduced_speed;
                                 hammer_timer <= hammer_timer - reduced_speed;
@@ -330,6 +315,7 @@ always @(negedge clk or posedge reset) begin
                                 hammer_timer <= hammer_timer - reduced_speed;
                                 hammer_timer <= hammer_timer - reduced_speed;         
                                 hammer_timer <= hammer_timer - reduced_speed;       
+                                hammer_timer <= hammer_timer - reduced_speed;
                                 hammer_timer <= hammer_timer - reduced_speed;
                        end         
                    end
@@ -368,7 +354,7 @@ always @(negedge clk or posedge reset) begin
                     mole3 <= 0;
                     mole4 <= 0;
                     
-                    // if this triggers, goto END SCREEN the next clk cycle (the other variable resets will happen later)
+                    // if this triggers, go to END SCREEN the next clk cycle (the other variable resets will happen later)
                     if (lives == 0) begin
                         //state <= END_SCREEN;  // Go to end screen if no lives left
                         //state <= IDLE;
@@ -399,26 +385,29 @@ always @(negedge clk or posedge reset) begin
                     mole <= ~mole;                       // You can change endscreen dance pattern of the moles by adding more blink counters or modifying the value
                     blink_counter <= 0;                  // reset counter for next time
                 end
-                if (blink_counter2 == 200_000_000) begin  // Toggle mole every second (assuming 100 MHz clock)
-                    mole2 <= ~mole2;                       // You can change endscreen dance pattern of the moles by adding more blink counters or modifying the value
-                    blink_counter2 <= 0;                  // reset counter for next time
+                if (blink_counter2 == 200_000_000) begin  
+                    mole2 <= ~mole2;                       
+                    blink_counter2 <= 0;                 
                 end
-                if (blink_counter3 == 300_000_000) begin  // Toggle mole every second (assuming 100 MHz clock)
-                    mole3 <= ~mole3;                       // You can change endscreen dance pattern of the moles by adding more blink counters or modifying the value
-                    blink_counter3 <= 0;                  // reset counter for next time
+                if (blink_counter3 == 300_000_000) begin  
+                    mole3 <= ~mole3;                       
+                    blink_counter3 <= 0;                  
                 end
-                if (blink_counter4 == 400_000_000) begin  // Toggle mole every second (assuming 100 MHz clock)
-                    mole4 <= ~mole4;                       // You can change endscreen dance pattern of the moles by adding more blink counters or modifying the value
-                    blink_counter4 <= 0;                  // reset counter for next time
+                if (blink_counter4 == 400_000_000) begin  
+                    mole4 <= ~mole4;                       
+                    blink_counter4 <= 0;                 
                 end
                 
+                // High Score Code
                 if (score > high_score) begin
                     high_score <= score;                // Displays the high score if you lost
                 end else begin                          // By adding more score variables as output signals instead of reg, you can display a list in the end screen
                     score <= high_score;
                 end
+                
                 if ((button && !button_prev) || (button2 && !button_prev2) || (button3 && !button_prev3) || (button4 && !button_prev4)) begin    
                     state <= 3'b000;  // Reset to IDLE state next clk cycle
+                    
                     // Some of the assignemnts are redudent since they happen again in the idle state, just saying. However, if you later want to trim it down, trim the ones in the IDLE state instead
                     score <= 7'b0000000;
                     lives <= 2'b11; // Starting with 3 lives
@@ -428,6 +417,14 @@ always @(negedge clk or posedge reset) begin
                     blink_counter <= 0;
                 end
             end
+            
+            WIN_SCREEN: begin
+                
+                // This is delibritley left empty; User must use the reset since they got the highest score
+                // If time permits, decorate with nice animations.             
+                
+            end
+            
        endcase
     end
 end
