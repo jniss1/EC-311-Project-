@@ -1,0 +1,40 @@
+module lfsr_random_29bit_range(
+    input  wire       clk,
+    input  wire       reset,
+    input  wire [28:0] seed,          // 29-bit seed for variability
+    output reg  [28:0] random_29bit,  // Raw 29-bit random value
+    output reg  [28:0] random_num     // 29-bit mapped number between ~100,000,000 and 300,000,000
+);
+
+reg [28:0] lfsr;
+wire feedback;
+
+// Primitive polynomial: x^29 + x^2 + 1
+// Taps at bits 28 and 1 (0-based indexing), plus the implicit bit 0 for the shift.
+assign feedback = lfsr[28] ^ lfsr[1];
+
+// LFSR update
+always @(posedge clk or posedge reset) begin
+    if (reset) begin
+        // Load the seed on reset (ensure seed is not zero for a maximal-length sequence)
+        lfsr <= (seed == 29'h0) ? 29'h1 : seed;
+    end else begin
+        // Shift left, insert feedback at LSB
+        lfsr <= {lfsr[27:0], feedback};
+    end
+end
+
+// Map LFSR output into desired range
+always @(posedge clk or posedge reset) begin
+    if (reset) begin
+        random_29bit <= 29'h0;
+        random_num   <= 29'h0;
+    end else begin
+        random_29bit <= lfsr;        
+        random_num <= (lfsr % 29'd200000000) + 29'd100000000;
+    end
+end
+
+endmodule
+
+
