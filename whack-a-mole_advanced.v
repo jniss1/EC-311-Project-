@@ -65,6 +65,7 @@ reg button_prev3;
 reg button_prev4;
 reg [28:0] blink_counter;   // Counter for blinking in the end state
 reg [28:0] reduced_speed;   // NEEDS MODIFICATION, shoudl correspond to integer that is 0.083 seconds
+reg [7:0] high_score;
 
 
 //Button Tracking
@@ -140,7 +141,7 @@ always @(negedge clk or posedge reset) begin
         button_prev2 <= 0;
         button_prev3 <= 0;
         button_prev4 <= 0;
-        //highscore <= 0;
+        high_score <= 0;
     end else begin
         case(state)
             IDLE: begin
@@ -171,8 +172,9 @@ always @(negedge clk or posedge reset) begin
             GAMEPLAY: begin 
                 // First, we will check if the game is over:
                 if (lives == 0) begin
-                        //state <= 3'b010;  // GLITCH: breaks when it says end screen Go to end screen if no lives left. IDK why...
-                        state <= IDLE;
+                        //state <= END_SCREEN;  
+                        //state <= IDLE;
+                        state <= 3'b111; // It seems that this is the only transition condition that triggers
                 end 
                 
                 // Next, we decrement the new mole timer, and check if it has hit 0:
@@ -246,37 +248,75 @@ always @(negedge clk or posedge reset) begin
                         mole_timer2 <= randnum2;        
                         mole_timer3 <= randnum3;
                         mole_timer4 <= randnum4;
-                        
                         hammer_timer <= 300_000_000;
+                        
                         // DYNAMIC TIMER INCREASE
-                    
-                        if (score > 10) begin
+                 
+                        if ((score >= 10) && (score < 20)) begin
                                 hammer_timer <= hammer_timer - reduced_speed;
-                                if (score > 20) begin
-                                        hammer_timer <= hammer_timer - reduced_speed;
-                                        if (score > 30) begin
-                                                hammer_timer <= hammer_timer - reduced_speed;
-                                                if (score > 40) begin
-                                                        hammer_timer <= hammer_timer - reduced_speed;
-                                                        if (score > 50) begin
-                                                                hammer_timer <= hammer_timer - reduced_speed;
-                                                                if (score > 60) begin
-                                                                        hammer_timer <= hammer_timer - reduced_speed;
-                                                                        if (score > 70) begin
-                                                                                hammer_timer <= hammer_timer - reduced_speed;
-                                                                                if (score > 80) begin
-                                                                                        hammer_timer <= hammer_timer - reduced_speed;
-                                                                                        if (score > 90) begin
-                                                                                                hammer_timer <= hammer_timer - reduced_speed;
-                                                                                        end
-                                                                                end                                
-                                                                        end
-                                                                end
-                                                        end
-                                                end
-                                        end
-                                end
-                        end
+                                hammer_timer <= hammer_timer - reduced_speed;
+                                hammer_timer <= hammer_timer - reduced_speed;
+                                hammer_timer <= hammer_timer - reduced_speed;
+                                hammer_timer <= hammer_timer - reduced_speed;
+                                hammer_timer <= hammer_timer - reduced_speed;
+                                hammer_timer <= hammer_timer - reduced_speed;
+                                hammer_timer <= hammer_timer - reduced_speed;
+                                hammer_timer <= hammer_timer - reduced_speed;
+                                hammer_timer <= hammer_timer - reduced_speed;
+                                hammer_timer <= hammer_timer - reduced_speed;
+                        end else if ((score >= 20) && (score < 30)) begin 
+                                hammer_timer <= hammer_timer - reduced_speed;
+                                hammer_timer <= hammer_timer - reduced_speed;
+                        end else if ((score >= 30) && (score < 40)) begin
+                                hammer_timer <= hammer_timer - reduced_speed;
+                                hammer_timer <= hammer_timer - reduced_speed;
+                                hammer_timer <= hammer_timer - reduced_speed;
+                        end else if ((score >= 40) && (score < 50)) begin
+                                hammer_timer <= hammer_timer - reduced_speed;
+                                hammer_timer <= hammer_timer - reduced_speed;
+                                hammer_timer <= hammer_timer - reduced_speed;
+                                hammer_timer <= hammer_timer - reduced_speed;
+                        end else if ((score >= 50) && (score < 60)) begin
+                                hammer_timer <= hammer_timer - reduced_speed;
+                                hammer_timer <= hammer_timer - reduced_speed;
+                                hammer_timer <= hammer_timer - reduced_speed;
+                                hammer_timer <= hammer_timer - reduced_speed;
+                                hammer_timer <= hammer_timer - reduced_speed;
+                       end else if ((score >= 60) && (score < 70)) begin
+                                hammer_timer <= hammer_timer - reduced_speed;
+                                hammer_timer <= hammer_timer - reduced_speed;
+                                hammer_timer <= hammer_timer - reduced_speed;
+                                hammer_timer <= hammer_timer - reduced_speed;
+                                hammer_timer <= hammer_timer - reduced_speed;
+                                hammer_timer <= hammer_timer - reduced_speed;
+                       end else if ((score >= 70) && (score < 80)) begin
+                                hammer_timer <= hammer_timer - reduced_speed;
+                                hammer_timer <= hammer_timer - reduced_speed;
+                                hammer_timer <= hammer_timer - reduced_speed;
+                                hammer_timer <= hammer_timer - reduced_speed;
+                                hammer_timer <= hammer_timer - reduced_speed;
+                                hammer_timer <= hammer_timer - reduced_speed;
+                                hammer_timer <= hammer_timer - reduced_speed;
+                       end else if ((score >= 80) && (score < 90)) begin
+                                hammer_timer <= hammer_timer - reduced_speed;
+                                hammer_timer <= hammer_timer - reduced_speed;
+                                hammer_timer <= hammer_timer - reduced_speed;
+                                hammer_timer <= hammer_timer - reduced_speed;
+                                hammer_timer <= hammer_timer - reduced_speed;
+                                hammer_timer <= hammer_timer - reduced_speed;
+                                hammer_timer <= hammer_timer - reduced_speed;         
+                                hammer_timer <= hammer_timer - reduced_speed;
+                       end else if ((score >= 80) && (score < 90)) begin
+                                hammer_timer <= hammer_timer - reduced_speed;
+                                hammer_timer <= hammer_timer - reduced_speed;
+                                hammer_timer <= hammer_timer - reduced_speed;
+                                hammer_timer <= hammer_timer - reduced_speed;
+                                hammer_timer <= hammer_timer - reduced_speed;
+                                hammer_timer <= hammer_timer - reduced_speed;
+                                hammer_timer <= hammer_timer - reduced_speed;         
+                                hammer_timer <= hammer_timer - reduced_speed;       
+                                hammer_timer <= hammer_timer - reduced_speed;
+                       end         
                    end
                    //Case 2: Wrong button  
                    else if ((mole == 1 && (button2 || button3 || button4)) || (mole2 == 1 && (button || button3 || button4)) || (mole3 == 1 && (button || button2 || button4)) || (mole4 == 1 && (button || button2 || button3))) begin
@@ -288,7 +328,8 @@ always @(negedge clk or posedge reset) begin
                             mole4 <= 0;
                             if (lives == 0) begin
                                 //state <= END_SCREEN;  // Go to end screen if no lives left
-                                state <= IDLE;
+                                //state <= IDLE;
+                                state <= 3'b111;
                             end 
                         
                             else begin
@@ -315,7 +356,8 @@ always @(negedge clk or posedge reset) begin
                     // if this triggers, goto END SCREEN the next clk cycle (the other variable resets will happen later)
                     if (lives == 0) begin
                         //state <= END_SCREEN;  // Go to end screen if no lives left
-                        state <= IDLE;
+                        //state <= IDLE;
+                        state <= 3'b111;
                     end 
                     
                     // If that did not trigger, then there are still lives remaining. Reset the timers to begin gameplay loop all over again
@@ -329,24 +371,44 @@ always @(negedge clk or posedge reset) begin
                 end
             end
             
-            
+            3'b111: begin
+                mole <= 1;
+                mole2 <= 1;
+                mole3 <=1;
+                mole4 <= 1;
+                if (score > high_score) begin
+                    high_score <= score;
+                end else begin
+                    score <= high_score;
+                end
+                if ((button && !button_prev) || (button2 && !button_prev2) || (button3 && !button_prev3) || (button4 && !button_prev4)) begin    
+                    state <= 3'b000;  // Reset to IDLE state next clk cycle
+                    // Some of the assignemnts are redudent since they happen again in the idle state, just saying. However, if you later want to trim it down, trim the ones in the IDLE state instead
+                    score <= 7'b0000000;
+                    lives <= 2'b11; // Starting with 3 lives
+                    mole <= 0;
+                    mole_timer <= 0;
+                    hammer_timer <= 0;
+                    blink_counter <= 0;
+                end
+            end
             
 //            END_SCREEN: begin
 //                // Mole LED will blink every second until button is pressed
-//                blink_counter <= blink_counter + 1;
-//                if (blink_counter == 300_000_000) begin  // Toggle mole every second (assuming 100 MHz clock)
-//                    mole <= ~mole;                       // Toggle mole visibility
-//                    blink_counter <= 0;                  // reset counter for next time
-//                end
+////                blink_counter <= blink_counter + 1;
+////                if (blink_counter == 300_000_000) begin  // Toggle mole every second (assuming 100 MHz clock)
+////                    mole <= ~mole;                       // Toggle mole visibility
+////                    blink_counter <= 0;                  // reset counter for next time
+////                end
                 
 //                //if (score > highscore) begin
 //                    //highscore <= score
 //                //end
+//                //mole3 <= 1;
                 
-//                score <= 7'b0000000;
 //                // Waits in this state until a rising edge button press is detected, then sends to IDLE state.
-//                if (button && !button_prev) begin  
-//                    //state <= 3'b000;  // Reset to IDLE state next clk cycle
+//                 if ((button && !button_prev) || (button2 && !button_prev2) || (button3 && !button_prev3) || (button4 && !button_prev4)) begin    
+//                    state <= 3'b000;  // Reset to IDLE state next clk cycle
 //                    // Some of the assignemnts are redudent since they happen again in the idle state, just saying. However, if you later want to trim it down, trim the ones in the IDLE state instead
 //                    score <= 7'b0000000;
 //                    lives <= 2'b11; // Starting with 3 lives
@@ -354,9 +416,9 @@ always @(negedge clk or posedge reset) begin
 //                    mole_timer <= 0;
 //                    hammer_timer <= 0;
 //                    blink_counter <= 0;
-//                    state <= 3'b000;  // Reset to IDLE state next clk cycle
+//                    //state <= 3'b000;  // Reset to IDLE state next clk cycle
 //                end
-            //end
+//            end
        endcase
     end
 end
