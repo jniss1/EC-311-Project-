@@ -63,7 +63,12 @@ reg button_prev;             // Previous button state to detect rising edge
 reg button_prev2;
 reg button_prev3;
 reg button_prev4;
-reg [28:0] blink_counter;   // Counter for blinking in the end state
+
+reg [28:0] blink_counter;   // Counter for blinking mole in the end state
+reg [28:0] blink_counter2;
+reg [28:0] blink_counter3;
+reg [28:0] blink_counter4;
+
 reg [28:0] reduced_speed;   // NEEDS MODIFICATION, shoudl correspond to integer that is 0.083 seconds
 reg [7:0] high_score;
 
@@ -135,7 +140,11 @@ always @(negedge clk or posedge reset) begin
         mole_timer4 <= 0;
         
         hammer_timer <= 0;
+        
         blink_counter <= 0;  // Used for blinking LED in END_SCREEN
+        blink_counter2 <= 0;
+        blink_counter3 <= 0;
+        blink_counter4 <= 0;
         
         button_prev <= 0;
         button_prev2 <= 0;
@@ -155,6 +164,12 @@ always @(negedge clk or posedge reset) begin
                 mole_timer2 <= 0;
                 mole_timer3 <= 0;
                 mole_timer4 <= 0;
+                
+                blink_counter <= 0;  // Used for blinking LED in END_SCREEN
+                blink_counter2 <= 0;
+                blink_counter3 <= 0;
+                blink_counter4 <= 0;
+        
                 // Detect rising edge of the button, for any button, on press goto GAMPLAY on next clk cycle
                 if ((button && !button_prev) || (button2 && !button_prev2) || (button3 && !button_prev3) || (button4 && !button_prev4)) begin   
                     // Initilizing gameplay variables
@@ -372,13 +387,34 @@ always @(negedge clk or posedge reset) begin
             end
             
             3'b111: begin
-                mole <= 1;
-                mole2 <= 1;
-                mole3 <=1;
-                mole4 <= 1;
+                
+                // Dancing Moles
+                
+                blink_counter <= blink_counter + 1;
+                blink_counter2 <= blink_counter2 + 1;
+                blink_counter3 <= blink_counter3 + 1;
+                blink_counter4 <= blink_counter4 + 1;
+                
+                if (blink_counter == 100_000_000) begin  // Toggle mole every second (assuming 100 MHz clock)
+                    mole <= ~mole;                       // You can change endscreen dance pattern of the moles by adding more blink counters or modifying the value
+                    blink_counter <= 0;                  // reset counter for next time
+                end
+                if (blink_counter2 == 200_000_000) begin  // Toggle mole every second (assuming 100 MHz clock)
+                    mole2 <= ~mole2;                       // You can change endscreen dance pattern of the moles by adding more blink counters or modifying the value
+                    blink_counter2 <= 0;                  // reset counter for next time
+                end
+                if (blink_counter3 == 300_000_000) begin  // Toggle mole every second (assuming 100 MHz clock)
+                    mole3 <= ~mole3;                       // You can change endscreen dance pattern of the moles by adding more blink counters or modifying the value
+                    blink_counter3 <= 0;                  // reset counter for next time
+                end
+                if (blink_counter4 == 400_000_000) begin  // Toggle mole every second (assuming 100 MHz clock)
+                    mole4 <= ~mole4;                       // You can change endscreen dance pattern of the moles by adding more blink counters or modifying the value
+                    blink_counter4 <= 0;                  // reset counter for next time
+                end
+                
                 if (score > high_score) begin
-                    high_score <= score;
-                end else begin
+                    high_score <= score;                // Displays the high score if you lost
+                end else begin                          // By adding more score variables as output signals instead of reg, you can display a list in the end screen
                     score <= high_score;
                 end
                 if ((button && !button_prev) || (button2 && !button_prev2) || (button3 && !button_prev3) || (button4 && !button_prev4)) begin    
@@ -392,33 +428,6 @@ always @(negedge clk or posedge reset) begin
                     blink_counter <= 0;
                 end
             end
-            
-//            END_SCREEN: begin
-//                // Mole LED will blink every second until button is pressed
-////                blink_counter <= blink_counter + 1;
-////                if (blink_counter == 300_000_000) begin  // Toggle mole every second (assuming 100 MHz clock)
-////                    mole <= ~mole;                       // Toggle mole visibility
-////                    blink_counter <= 0;                  // reset counter for next time
-////                end
-                
-//                //if (score > highscore) begin
-//                    //highscore <= score
-//                //end
-//                //mole3 <= 1;
-                
-//                // Waits in this state until a rising edge button press is detected, then sends to IDLE state.
-//                 if ((button && !button_prev) || (button2 && !button_prev2) || (button3 && !button_prev3) || (button4 && !button_prev4)) begin    
-//                    state <= 3'b000;  // Reset to IDLE state next clk cycle
-//                    // Some of the assignemnts are redudent since they happen again in the idle state, just saying. However, if you later want to trim it down, trim the ones in the IDLE state instead
-//                    score <= 7'b0000000;
-//                    lives <= 2'b11; // Starting with 3 lives
-//                    mole <= 0;
-//                    mole_timer <= 0;
-//                    hammer_timer <= 0;
-//                    blink_counter <= 0;
-//                    //state <= 3'b000;  // Reset to IDLE state next clk cycle
-//                end
-//            end
        endcase
     end
 end
