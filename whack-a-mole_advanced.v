@@ -261,63 +261,34 @@ always @(negedge clk or posedge reset) begin
                         hammer_timer <= 300_000_000;
                         
                         // DYNAMIC TIMER INCREASE
-                 
-                        if ((score >= 8) && (score < 16)) begin
-                                hammer_timer <= hammer_timer - reduced_speed;
-                        end else if ((score >= 16) && (score < 24)) begin 
-                                hammer_timer <= hammer_timer - reduced_speed;
-                                hammer_timer <= hammer_timer - reduced_speed;
-                        end else if ((score >= 24) && (score < 32)) begin
-                                hammer_timer <= hammer_timer - reduced_speed;
-                                hammer_timer <= hammer_timer - reduced_speed;
-                                hammer_timer <= hammer_timer - reduced_speed;
-                        end else if ((score >= 32) && (score < 40)) begin
-                                hammer_timer <= hammer_timer - reduced_speed;
-                                hammer_timer <= hammer_timer - reduced_speed;
-                                hammer_timer <= hammer_timer - reduced_speed;
-                                hammer_timer <= hammer_timer - reduced_speed;
-                        end else if ((score >= 40) && (score < 48)) begin
-                                hammer_timer <= hammer_timer - reduced_speed;
-                                hammer_timer <= hammer_timer - reduced_speed;
-                                hammer_timer <= hammer_timer - reduced_speed;
-                                hammer_timer <= hammer_timer - reduced_speed;
-                                hammer_timer <= hammer_timer - reduced_speed;
-                       end else if ((score >= 48) && (score < 56)) begin
-                                hammer_timer <= hammer_timer - reduced_speed;
-                                hammer_timer <= hammer_timer - reduced_speed;
-                                hammer_timer <= hammer_timer - reduced_speed;
-                                hammer_timer <= hammer_timer - reduced_speed;
-                                hammer_timer <= hammer_timer - reduced_speed;
-                                hammer_timer <= hammer_timer - reduced_speed;
-                       end else if ((score >= 56) && (score < 58)) begin
-                                hammer_timer <= hammer_timer - reduced_speed;
-                                hammer_timer <= hammer_timer - reduced_speed;
-                                hammer_timer <= hammer_timer - reduced_speed;
-                                hammer_timer <= hammer_timer - reduced_speed;
-                                hammer_timer <= hammer_timer - reduced_speed;
-                                hammer_timer <= hammer_timer - reduced_speed;
-                                hammer_timer <= hammer_timer - reduced_speed;
-                       end else if ((score >= 58) && (score < 60)) begin
-                                hammer_timer <= hammer_timer - reduced_speed;
-                                hammer_timer <= hammer_timer - reduced_speed;
-                                hammer_timer <= hammer_timer - reduced_speed;
-                                hammer_timer <= hammer_timer - reduced_speed;
-                                hammer_timer <= hammer_timer - reduced_speed;
-                                hammer_timer <= hammer_timer - reduced_speed;
-                                hammer_timer <= hammer_timer - reduced_speed;         
-                                hammer_timer <= hammer_timer - reduced_speed;
-                       end else if (score >= 60) begin
-                                hammer_timer <= hammer_timer - reduced_speed;
-                                hammer_timer <= hammer_timer - reduced_speed;
-                                hammer_timer <= hammer_timer - reduced_speed;
-                                hammer_timer <= hammer_timer - reduced_speed;
-                                hammer_timer <= hammer_timer - reduced_speed;
-                                hammer_timer <= hammer_timer - reduced_speed;
-                                hammer_timer <= hammer_timer - reduced_speed;         
-                                hammer_timer <= hammer_timer - reduced_speed;       
-                                hammer_timer <= hammer_timer - reduced_speed;
-                                hammer_timer <= hammer_timer - reduced_speed;
-                       end         
+                        if (hammer_timer > 250_000_000) begin // can mess with this value and that of reduced_speed
+                            if ((score >= 8) && (score < 16)) begin
+                                    hammer_timer <= hammer_timer - reduced_speed;
+                            end else if ((score >= 16) && (score < 24)) begin 
+                                    hammer_timer <= hammer_timer - reduced_speed;
+                                    
+                            end else if ((score >= 24) && (score < 32)) begin
+                                    hammer_timer <= hammer_timer - reduced_speed;
+                                    
+                            end else if ((score >= 32) && (score < 40)) begin
+                                    hammer_timer <= hammer_timer - reduced_speed;
+                                    
+                            end else if ((score >= 40) && (score < 48)) begin
+                                    hammer_timer <= hammer_timer - reduced_speed;
+                                    
+                            end else if ((score >= 48) && (score < 56)) begin
+                                    hammer_timer <= hammer_timer - reduced_speed;
+                                    
+                            end else if ((score >= 56) && (score < 58)) begin
+                                    hammer_timer <= hammer_timer - reduced_speed;
+                                    
+                            end else if ((score >= 58) && (score < 60)) begin
+                                    hammer_timer <= hammer_timer - reduced_speed;
+                                    
+                            end else if (score >= 60) begin
+                                    hammer_timer <= hammer_timer - reduced_speed;
+                            end         
+                       end
                    end
                    //Case 2: Wrong button  
                    else if ((mole == 1 && (button2 || button3 || button4)) || (mole2 == 1 && (button || button3 || button4)) || (mole3 == 1 && (button || button2 || button4)) || (mole4 == 1 && (button || button2 || button3))) begin
