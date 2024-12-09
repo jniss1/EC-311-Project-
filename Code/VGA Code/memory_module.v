@@ -23,9 +23,9 @@
 module memory_module (
     input wire [9:0] x,         // Current x-coordinate from VGA
     input wire [9:0] y,         // Current y-coordinate from VGA
-    output wire [4:0] red,      // 5-bit red color output
-    output wire [5:0] green,    // 6-bit green color output
-    output wire [4:0] blue      // 5-bit blue color output
+    output wire [3:0] red,      // 5-bit red color output
+    output wire [3:0] green,    // 6-bit green color output
+    output wire [3:0] blue      // 5-bit blue color output
 );
 
     // Sprite size
@@ -57,8 +57,8 @@ module memory_module (
     wire [15:0] pixel_value = sprite_active ? pixel_data[pixel_index] : 16'b0;
 
     // Extract RGB565 components
-    assign red   = pixel_value[15:11]; // Upper 5 bits for red
-    assign green = pixel_value[10:5];  // Middle 6 bits for green
-    assign blue  = pixel_value[4:0];   // Lower 5 bits for blue
+    assign red   = pixel_value[15:12]; // Upper 5 bits for red
+    assign green = pixel_value[10:7];  // Middle 6 bits for green
+    assign blue  = pixel_value[4:1];   // Lower 5 bits for blue
 
 endmodule

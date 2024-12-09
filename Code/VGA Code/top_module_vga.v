@@ -25,9 +25,9 @@ module top_module_vga (
     input wire reset,         // Reset signal
     output wire hsync,        // Horizontal sync for VGA
     output wire vsync,        // Vertical sync for VGA
-    output wire [4:0] red,    // 5-bit red VGA signal
-    output wire [5:0] green,  // 6-bit green VGA signal
-    output wire [4:0] blue    // 5-bit blue VGA signal
+    output wire [3:0] red,    // 5-bit red VGA signal
+    output wire [3:0] green,  // 6-bit green VGA signal
+    output wire [3:0] blue    // 5-bit blue VGA signal
 );
 
     // Clock signal for the VGA controller
@@ -37,6 +37,7 @@ module top_module_vga (
     wire [9:0] x;
     wire [9:0] y;
     wire active_video;
+
 
     // Instantiate Clock Divider
     clk_divider clk_div_inst (
@@ -64,5 +65,6 @@ module top_module_vga (
         .green(green),         // Green color output
         .blue(blue)            // Blue color output
     );
-
+    
+  
 endmodule
