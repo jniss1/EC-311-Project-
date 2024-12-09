@@ -37,7 +37,7 @@ module clk_divider(
         end else begin
             counter <= counter + 1;
             
-            if (counter == 3) begin  // Change bool exp to change toggle value
+            if (counter == 2) begin  // Change bool exp to change toggle value
                 clk_out <= ~clk_out;
                 counter <= 0;
             end
