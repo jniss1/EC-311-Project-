@@ -37,45 +37,55 @@ module vga_top(clk, reset, in_r, in_g, in_b, vga_r, vga_g, vga_b, h_sync, v_sync
     vga_controller vga_con (newClk, h_sync, v_sync, ledOn, x, y);
     
     // Block detection
-    wire [1:0] block;
-    assign block = (x >= 266 && x < 330) && (y >= 169 && y < 233) ? 2'b00 : // Block 0: bottom left
-                   (x >= 410 && x < 474) && (y >= 169 && y < 233) ? 2'b01 : // Block 1: bottom right
-                   (x >= 410 && x < 474) && (y >= 313 && y < 377) ? 2'b10 : // Block 2: top right
-                   (x >= 266 && x < 330) && (y >= 313 && y < 377) ? 2'b11 : 2'b00; // Block 3: top left
+    wire [2:0] block;
+    assign block = (x >= 266 && x < 330) && (y >= 169 && y < 233) ? 3'b001 : //top left
+                   (x >= 410 && x < 474) && (y >= 169 && y < 233) ? 3'b010 : //top right
+                   (x >= 410 && x < 474) && (y >= 313 && y < 377) ? 3'b011 : // bottom right
+                   (x >= 266 && x < 330) && (y >= 313 && y < 377) ? 3'b100 : 3'b000; //bottom left
     
-    assign ledOn = 1'b1; // Force it on
 
     
     always @(posedge newClk)
-begin
-    if (ledOn) begin
-        if (block == 2'b00) begin
-            vga_r <= 4'hF;  // Full red
-            vga_g <= 4'h0;  // No green
-            vga_b <= 4'h0;  // No blue
-        end
-        else if (block == 2'b01) begin
-            vga_r <= 4'h0;  // No red
-            vga_g <= 4'h0;  // Full green
-            vga_b <= 4'h0;  // No blue
-        end
-        else if (block == 2'b10) begin
-            vga_r <= 4'h0;  // No red
-            vga_g <= 4'h0;  // No green
-            vga_b <= 4'h0;  // Full blue
-        end
-        else if (block == 2'b11) begin
-            vga_r <= 4'h0;  // Full red
-            vga_g <= 4'h0;  // Full green
-            vga_b <= 4'h0;  // White
+    begin
+        if (ledOn) begin
+//            if (block == 3'b000) begin
+//                vga_r <= 4'h0;  // Full red
+//                vga_g <= 4'h0;  // No green
+//                vga_b <= 4'hF;  // No blue
+//            end
+//            else 
+            if (block == 3'b001) begin
+                vga_r <= 4'h0;  // No red
+                vga_g <= 4'hF;  // Full green
+                vga_b <= 4'h0;  // No blue
+            end
+            else if (block == 3'b010) begin
+                vga_r <= 4'h0;  // No red
+                vga_g <= 4'hF;  // No green
+                vga_b <= 4'h0;  // Full blue
+            end
+            else if (block == 3'b011) begin
+                vga_r <= 4'h0;  // Full red
+                vga_g <= 4'hF;  // Full green
+                vga_b <= 4'h0;  // White
+            end
+            else if (block == 3'b100) begin
+                vga_r <= 4'h0; 
+                vga_g <= 4'hF;
+                vga_b <= 4'h0; 
+            end
+            else begin
+                vga_r <= 4'h0;  // Full red
+                vga_g <= 4'h0;  // No green
+                vga_b <= 4'hF;  // No blue
+            end 
         end
         else begin
-            vga_r <= 4'h0; 
-            vga_g <= 4'h0;
-            vga_b <= 4'h0; 
-        end
+            vga_r <= 4'h0;  // Full red
+            vga_g <= 4'h0;  // No green
+            vga_b <= 4'hF;
+        end  
     end
-end
-
+    
     
 endmodule
