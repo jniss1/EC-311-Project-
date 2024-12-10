@@ -40,14 +40,14 @@ module top_module_vga (
 
 
     // Instantiate Clock Divider
-    clk_divider clk_div_inst (
+    clk_divider clk_divider_inst (
         .clk_in(clk_in),       // Input clock (e.g., 100 MHz)
         .reset(reset),         // Reset signal
         .clk_out(clk_25MHz)    // Output clock (25 MHz for VGA)
     );
 
     // Instantiate VGA Controller
-    vga_controller vga_ctrl_inst (
+    vga_controller vga_controller_inst (
         .clk_25MHz(clk_25MHz), // 25 MHz clock
         .reset(reset),         // Reset signal
         .hsync(hsync),         // Horizontal sync signal
@@ -58,7 +58,7 @@ module top_module_vga (
     );
 
     // Instantiate Memory Module
-    memory_module mem_mod_inst (
+    fourblock_test_module disp_inst (
         .x(x),                 // Current X coordinate from VGA
         .y(y),                 // Current Y coordinate from VGA
         .red(red),             // Red color output

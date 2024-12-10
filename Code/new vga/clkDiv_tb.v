@@ -3,9 +3,9 @@
 // Company: 
 // Engineer: 
 // 
-// Create Date: 12/08/2024 03:01:03 PM
+// Create Date: 11/02/2024 08:32:09 AM
 // Design Name: 
-// Module Name: clk_divider_tb
+// Module Name: clkDiv_tb
 // Project Name: 
 // Target Devices: 
 // Tool Versions: 
@@ -20,31 +20,18 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 
-module clk_divider_tb(
+module clkDiv_tb();
     
-    );
+    reg clk, reset;
+    wire newClk;
     
-    reg clk_in;
-    reg reset;
-    wire clk_out;
-    
-    clk_divider DUT (
-        .clk_in(clk_in),
-        .reset(reset),
-        .clk_out(clk_out)
-    );
-    
-    always #2 clk_in = ~clk_in;
+    clk_divider test(clk, reset, newClk);
     
     initial begin
-        clk_in = 0;
+        clk =  0;
         reset = 0;
-        #1 reset = 1;
-        #1 reset = 0;
-        
-        #100 reset = 1;
-        #100 reset = 0;
         #500 $finish;
-    end 
+    end
     
+    always #2 clk = ~clk;
 endmodule
