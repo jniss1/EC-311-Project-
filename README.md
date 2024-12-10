@@ -19,3 +19,7 @@ Generally, the code can be split into those for the simple version of the game a
 
 ## Additional Notes:
 Mirclea wrote the accelerometer modules, Arielle wrote the the VGA modules, Jacob wrote the game logic modules, Mingshan wrote the RNG module and matlab image converter, and Kofi wrote... (please update this so it is accurate to your work!!)
+
+
+## Some sources
+- accelerometer tutorial: https://github.com/FPGADude/Digital-Design/tree/main/FPGA%20Projects/Nexys%20A7%203-Axis%20Accelerometer%20SPI
