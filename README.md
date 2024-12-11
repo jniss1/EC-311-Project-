@@ -1,6 +1,6 @@
 # EC-311-Project: FPGA Whack-a-Mole
 
-![test](Idea.gif)
+![test](Idea.GIF)
 _____________________________________________________
 Team Members: Arielle, Mirclea, Jacob, Mingshan, Kofi
 
