@@ -1,7 +1,6 @@
 # EC-311-Project: FPGA Whack-a-Mole
 
-To group memebers: Here is a link to my (Jacob's) video explaining code (6:30 min): https://drive.google.com/file/d/1JrSTHwWFClQChDPSzISPSwKdR4D43Did/view?usp=sharing
-
+![test](Idea.gif)
 _____________________________________________________
 Team Members: Arielle, Mirclea, Jacob, Mingshan, Kofi
 
